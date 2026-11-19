@@ -210,3 +210,7 @@ document.querySelectorAll('.card').forEach(function(c){
     if(p>=1&&!paused&&!reduce)go(i+1);requestAnimationFrame(tick)}
   go(0);requestAnimationFrame(tick);
 })();
+
+/* ---------- Hero: respeita "reduzir movimento" (mostra só o poster) ---------- */
+(function(){var v=document.getElementById('heroVideo');
+  if(v&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause()}})();
