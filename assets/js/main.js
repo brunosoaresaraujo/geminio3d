@@ -214,3 +214,36 @@ document.querySelectorAll('.card').forEach(function(c){
 /* ---------- Hero: respeita "reduzir movimento" (mostra só o poster) ---------- */
 (function(){var v=document.getElementById('heroVideo');
   if(v&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause()}})();
+
+/* ---------- Vitrine: filtro + lista de interesse -> WhatsApp ---------- */
+(function(){
+  var grid=document.getElementById('pgrid');if(!grid)return;
+  var cards=[].slice.call(grid.querySelectorAll('.pc')),tray=document.getElementById('tray'),
+    thumbs=document.getElementById('trayThumbs'),n=document.getElementById('trayN'),l=document.getElementById('trayL'),
+    send=document.getElementById('traySend'),NUM='5561991015999',INTRO='Olá! Vi o site da Geminio 3D Lab e tenho interesse ';
+  function wa(t){return 'https://wa.me/'+NUM+'?text='+encodeURIComponent(t)}
+  function sel(){return cards.filter(function(c){return c.classList.contains('sel')})}
+  function upd(){
+    var s=sel(),k=s.length;
+    n.textContent=k;l.textContent=k===1?'peça na lista':'peças na lista';
+    thumbs.innerHTML='';s.slice(-4).forEach(function(c){var i=document.createElement('img');i.src=c.querySelector('img').src;i.alt='';thumbs.appendChild(i)});
+    send.href=wa(INTRO+(k===1?'nesta peça':'nestas peças')+':\n'+s.map(function(c){return '• '+c.dataset.name}).join('\n')+'\n\nPode me passar valores e prazo?');
+    tray.classList.toggle('show',k>0);
+  }
+  cards.forEach(function(c){
+    var b=c.querySelector('.pc-add');
+    b.addEventListener('click',function(){var on=c.classList.toggle('sel');b.setAttribute('aria-pressed',on);upd()});
+    c.querySelector('[data-ask]').addEventListener('click',function(e){
+      e.preventDefault();window.open(wa(INTRO+'nesta peça: '+c.dataset.name+'.\nPode me passar valor e prazo?'),'_blank','noopener');
+    });
+  });
+  document.getElementById('trayClear').addEventListener('click',function(){
+    cards.forEach(function(c){c.classList.remove('sel');c.querySelector('.pc-add').setAttribute('aria-pressed','false')});upd();
+  });
+  document.querySelectorAll('.chip').forEach(function(ch){
+    ch.addEventListener('click',function(){
+      document.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x===ch)});
+      var f=ch.dataset.f;cards.forEach(function(c){var show=f==='all'||c.dataset.cat===f;c.hidden=!show;if(show)c.classList.add('in')});
+    });
+  });
+})();
